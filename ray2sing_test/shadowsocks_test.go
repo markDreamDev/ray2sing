@@ -29,6 +29,28 @@ func TestShadowsocks(t *testing.T) {
 }
 
 
+func TestShadowsocksLegacyFormat(t *testing.T) {
+	// Legacy format: ss://BASE64(method:password@host:port)#tag
+	// BASE64("aes-256-gcm:vXxMxhfbzY@8.217.240.158:55381") = "YWVzLTI1Ni1nY206dlh4TXh4ZmJ6WUA4LjIxNy4yNDAuMTU4OjU1Mzgx"
+	url := "ss://YWVzLTI1Ni1nY206dlh4TXh4ZmJ6WUA4LjIxNy4yNDAuMTU4OjU1Mzgx#test-hk"
+
+	expectedJSON := `
+	{
+		"outbounds": [
+		  {
+			"type": "shadowsocks",
+			"tag": "test-hk § 0",
+			"server": "8.217.240.158",
+			"server_port": 55381,
+			"method": "aes-256-gcm",
+			"password": "vXxMxxfbzY"
+		  }
+		]
+	  }
+	`
+	ray2sing.CheckUrlAndJson(url, expectedJSON, t)
+}
+
 func TestShadowsocksEIHBase64(t *testing.T) {
 	// EIH extension: https://github.com/Shadowsocks-NET/shadowsocks-specs/blob/main/2022-2-shadowsocks-2022-extensible-identity-headers.md
 	// Named as "multi-user" in https://sing-box.sagernet.org/configuration/inbound/shadowsocks/#structure
